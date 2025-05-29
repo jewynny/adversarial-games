@@ -216,6 +216,9 @@ def minimax(player, board, depth_limit):
     max_player = player
     placement = None
 
+### Please finish the code below ##############################################
+###############################################################################
+
     def value(curr_player, curr_board, depth):
         if curr_board.terminal() or depth == 0:
             return evaluate(max_player, curr_board)
@@ -243,23 +246,7 @@ def minimax(player, board, depth_limit):
         if score > best_score:
             best_score = score
             placement = col
-
-    return placement
-
-### Please finish the code below ##############################################
-###############################################################################
-    def value(player, board, depth_limit):
-        pass
-
-    def max_value(player, board, depth_limit):
-        pass
-    
-    def min_value(player, board, depth_limit):
-        pass
-
-    next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-    score = -math.inf
-
+            
 ###############################################################################
     return placement
 
@@ -337,17 +324,39 @@ def expectimax(player, board, depth_limit):
 
 ### Please finish the code below ##############################################
 ###############################################################################
-    def value(player, board, depth_limit):
-        pass
+    def next_player(curr_player):
+        return board.PLAYER2 if curr_player == board.PLAYER1 else board.PLAYER1
 
-    def max_value(player, board, depth_limit):
-        pass
-    
-    def min_value(player, board, depth_limit):
-        pass
+    def value(curr_player, curr_board, depth):
+        if curr_board.terminal() or depth == 0:
+            return evaluate(max_player, curr_board)
+        if curr_player == max_player:
+            return max_value(curr_player, curr_board, depth)
+        else:
+            return exp_value(curr_player, curr_board, depth)
 
-    next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-    score = -math.inf
+    def max_value(curr_player, curr_board, depth):
+        v = -math.inf
+        for col, child in get_child_boards(curr_player, curr_board):
+            v = max(v, value(next_player(curr_player), child, depth - 1))
+        return v
+
+    def exp_value(curr_player, curr_board, depth):
+        children = get_child_boards(curr_player, curr_board)
+        if not children:
+            return evaluate(max_player, curr_board)
+        total = 0
+        for col, child in children:
+            total += value(next_player(curr_player), child, depth - 1)
+        return total / len(children)
+
+    best_score = -math.inf
+    for col, child in get_child_boards(player, board):
+        score = value(next_player(player), child, depth_limit - 1)
+        if score > best_score:
+            best_score = score
+            placement = col
+            
 ###############################################################################
     return placement
 
