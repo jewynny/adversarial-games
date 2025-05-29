@@ -216,6 +216,36 @@ def minimax(player, board, depth_limit):
     max_player = player
     placement = None
 
+    def value(curr_player, curr_board, depth):
+        if curr_board.terminal() or depth == 0:
+            return evaluate(max_player, curr_board)
+        if curr_player == max_player:
+            return max_value(curr_player, curr_board, depth)
+        else:
+            return min_value(curr_player, curr_board, depth)
+
+    def max_value(curr_player, curr_board, depth):
+        v = -math.inf
+        for col, child in get_child_boards(curr_player, curr_board):
+            v = max(v, value(board.PLAYER2, child, depth - 1))
+        return v
+
+    def min_value(curr_player, curr_board, depth):
+        v = math.inf
+        for col, child in get_child_boards(curr_player, curr_board):
+            v = min(v, value(board.PLAYER1, child, depth - 1))
+        return v
+
+    # Choose the best move
+    best_score = -math.inf
+    for col, child in get_child_boards(player, board):
+        score = value(board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1, child, depth_limit - 1)
+        if score > best_score:
+            best_score = score
+            placement = col
+
+    return placement
+
 ### Please finish the code below ##############################################
 ###############################################################################
     def value(player, board, depth_limit):
