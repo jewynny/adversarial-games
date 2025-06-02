@@ -368,13 +368,14 @@ def expectimax(player, board, depth_limit):
         return v
 
     def exp_value(curr_player, curr_board, depth):
+        v = 0
         children = get_child_boards(curr_player, curr_board)
         if not children:
             return evaluate(max_player, curr_board)
-        total = 0
+        prob = 1 / len(children)
         for col, child in children:
-            total += value(next_player(curr_player), child, depth - 1)
-        return total / len(children)
+            v += prob * value(next_player(curr_player), child, depth - 1)
+        return v
 
     best_score = -math.inf
     for col, child in get_child_boards(player, board):
