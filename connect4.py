@@ -279,17 +279,43 @@ def alphabeta(player, board, depth_limit):
 
 ### Please finish the code below ##############################################
 ###############################################################################
-    def value(player, board, depth_limit, alpha, beta):
-        pass
+    def value(curr_player, curr_board, depth, alpha, beta):
+        if curr_board.terminal() or depth == 0:
+            return evaluate(max_player, curr_board)
+        if curr_player == max_player:
+            return max_value(curr_player, curr_board, depth, alpha, beta)
+        else:
+            return min_value(curr_player, curr_board, depth, alpha, beta)
 
-    def max_value(player, board, depth_limit, alpha, beta):
-        pass
-    
-    def min_value(player, board, depth_limit, alpha, beta):
-        pass
+    def max_value(curr_player, curr_board, depth, alpha, beta):
+        v = -math.inf
+        for col, child in get_child_boards(curr_player, curr_board):
+            v = max(v, value(board.PLAYER2, child, depth - 1, alpha, beta))
+            if v >= beta:
+                return v  # beta cutoff
+            alpha = max(alpha, v)
+        return v
 
-    next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-    score = -math.inf
+    def min_value(curr_player, curr_board, depth, alpha, beta):
+        v = math.inf
+        for col, child in get_child_boards(curr_player, curr_board):
+            v = min(v, value(board.PLAYER1, child, depth - 1, alpha, beta))
+            if v <= alpha:
+                return v  # alpha cutoff
+            beta = min(beta, v)
+        return v
+
+    # Root level: choose the best move for the MAX player
+    alpha = -math.inf
+    beta = math.inf
+    best_score = -math.inf
+    for col, child in get_child_boards(player, board):
+        score = value(board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1, child, depth_limit - 1, alpha, beta)
+        if score > best_score:
+            best_score = score
+            placement = col
+        alpha = max(alpha, best_score)
+
 ###############################################################################
     return placement
 
